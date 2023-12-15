@@ -7,7 +7,7 @@ import ValidateTaskNameFormat from "~/tasks/application/ValidateTaskNameFormat";
 import type { AtLeast } from "~/shared/types/AtLeast";
 
 export default function useEditTaskForm(store: StoreData) {
-  let editTaskId: Ref<Uuid | null> = ref(null);
+  const editTaskId: Ref<Uuid | null> = ref(null);
   const errorMessage: Ref<string> = ref("");
   const validateTaskName: ValidateTaskNameFormat = new ValidateTaskNameFormat();
 
@@ -33,12 +33,10 @@ export default function useEditTaskForm(store: StoreData) {
   };
 
   const saveEditTaskId = (value: Uuid) => {
-    console.log("save!", value);
     editTaskId.value = value;
   };
 
   const clearSavedEditTaskId = () => {
-    console.log("clear!!");
     editTaskId.value = null;
   };
 
@@ -48,17 +46,13 @@ export default function useEditTaskForm(store: StoreData) {
   };
 
   const handleCheckTaskById = (todoTask: TodoTaskData) => {
-    console.log("todo", todoTask);
     store.editTodoTaskById(todoTask);
   };
 
   const editCurrentTask = (editedTask: AtLeast<TodoTaskData, "name">) => {
-    console.log("editedTask", editedTask);
     if (!isInputTextValid(editedTask.name) || editTaskId.value === null) {
-      console.log("aaa", isInputTextValid(editedTask.name));
       return;
     }
-    console.log("next");
     store.editTodoTaskById({ ...editedTask, id: editTaskId.value });
     clearEditData();
   };

@@ -39,7 +39,7 @@ const taskId: ComputedRef<Uuid> = computed(() => {
         @on-click-edit="emit('on-click-edit', task.id)"
       />
     </div>
-    <ErrorMessage v-if="errorMessage.length > 0 && !isEdit" :error-message="errorMessage" />
+    <ErrorMessage v-if="errorMessage && !isEdit" :error-message="errorMessage" />
   </li>
 </template>
 

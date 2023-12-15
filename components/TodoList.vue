@@ -60,11 +60,11 @@ const gridViewClass = computed(() => {
 });
 
 const isCurrentFilterEmpty = computed(() => {
-  return isEmptyTasks && !isEmptyTasks.value && todoTasks.value.length === 0;
+  return !isEmptyTasks.value && todoTasks.value.length === 0;
 });
 
 const getErrorMessageForTaskId = (taskId: Uuid) => {
-  return deleteTaskId.value === taskId || editTaskId.value === taskId ? errorMessage : "";
+  return deleteTaskId.value === taskId || editTaskId.value === taskId ? errorMessage.value : "";
 };
 </script>
 

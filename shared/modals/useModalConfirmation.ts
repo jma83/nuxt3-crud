@@ -4,7 +4,6 @@ export default function useModalConfirmation() {
   let modalConfirmationDialog: Ref<HTMLDialogElement | null> = ref(null);
 
   const initModal = (modalRef: Ref<HTMLDialogElement>) => {
-    console.log("modalRef", modalRef);
     modalConfirmationDialog = modalRef;
   };
 

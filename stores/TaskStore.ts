@@ -29,7 +29,7 @@ export const useTaskStore: StoreDefinitionData = defineStore(storeName, {
     },
     filteredTodoTasks(state: StateData): TodoTaskData[] {
       const tasks: TodoTaskData[] = this.todoTasksByActiveFilter;
-      return tasks.filter((task: TodoTaskData) => task.name.includes(state.nameSearch));
+      return tasks.filter((task: TodoTaskData) => task.name.toLowerCase().includes(state.nameSearch.toLowerCase()));
     },
     currentFilter(state: StateData): TodoFilterData | undefined {
       return state.filters.find((filter) => filter.active);
