@@ -4,7 +4,7 @@ import { useTaskStore } from "~/stores/TaskStore";
 
 const store = useTaskStore();
 const isEmptyTasks: ComputedRef<boolean> = computed(() => {
-  return store.todoTasks.length === 0;
+  return !store.todoTasks.length;
 });
 </script>
 

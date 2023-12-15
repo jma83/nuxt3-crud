@@ -16,10 +16,6 @@ const todoTasks: ComputedRef<TodoTaskData[]> = computed(() => {
   return store.filteredTodoTasks;
 });
 
-const isEmptyTasks: ComputedRef<boolean> = computed(() => {
-  return store.todoTasks.length === 0;
-});
-
 const isGridView: ComputedRef<boolean> = computed(() => {
   return store.isGridView;
 });
@@ -60,7 +56,7 @@ const gridViewClass = computed(() => {
 });
 
 const isCurrentFilterEmpty = computed(() => {
-  return !isEmptyTasks.value && todoTasks.value.length === 0;
+  return store.todoTasks.length && !todoTasks.value.length;
 });
 
 const getErrorMessageForTaskId = (taskId: Uuid) => {

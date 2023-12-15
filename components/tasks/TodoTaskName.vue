@@ -13,8 +13,8 @@ const visibleTaskId = computed(() => {
   return `todoTask-${props.task.id.slice(0, 6)}`;
 });
 
-const onCheckedChange = (e: Event) => {
-  const target = e.target as HTMLInputElement;
+const onCheckedChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
   return emit("on-check", { ...props.task, isDone: target.checked });
 };
 </script>
