@@ -1,4 +1,3 @@
-import type { StoreDefinition } from "pinia";
 import type { StateData } from "~/shared/stores/domain/StateData";
 import { todoFilterItems } from "~/filters/domain/todoFilterItems";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
@@ -6,13 +5,12 @@ import type TodoFilterData from "~/filters/domain/TodoFilterData";
 import { TodoFilterId } from "~/filters/domain/TodoFilterId";
 import type { AtLeast } from "~/shared/types/AtLeast";
 import type { Uuid } from "~/shared/types/Uuid";
-import type { ActionsData } from "~/shared/stores/domain/ActionsData";
-import type { GettersData } from "~/shared/stores/domain/GettersData";
+import type { StoreData } from "~/shared/stores/domain/StoreData";
 
-const storeName = "tasks";
+export const storeName = "tasks";
 
 // @ts-ignore
-export const useTaskStore: StoreDefinition<"tasks", StateData, GettersData, ActionsData> = defineStore(storeName, {
+export const useTaskStore: StoreData = defineStore(storeName, {
   state: (): StateData => ({
     todoTasks: [],
     filters: [...todoFilterItems],
