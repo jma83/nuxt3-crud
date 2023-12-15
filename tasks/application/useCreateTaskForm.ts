@@ -2,7 +2,6 @@ import type { Ref } from "vue";
 import ValidateTaskNameFormat from "~/tasks/application/ValidateTaskNameFormat";
 import type TaskValidationResponseData from "~/tasks/domain/TaskValidationResponseData";
 import { useTaskStore } from "~/stores/TaskStore";
-import type { StoreData } from "~/shared/stores/domain/StoreData";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
 import type { Uuid } from "~/shared/types/Uuid";
 

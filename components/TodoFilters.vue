@@ -1,25 +1,14 @@
 <script setup lang="ts">
 import GridViewFilter from "~/components/filters/GridViewFilter.vue";
-import { useTaskStore } from "~/stores/TaskStore";
-import type { Ref } from "vue";
+import useCurrentFilters from "~/filters/application/useCurrentFilters";
 
-const store = useTaskStore();
-
-const searchInput: Ref<string> = ref("");
-
-const handleInputSearch = () => {
-  store.setNameSearch(searchInput.value);
-};
-
-const handleChangeViewFilter = (isGridView: boolean) => {
-  store.setIsGridView(isGridView);
-};
+const { isGridView, filters, searchInput, handleChangeViewFilter, handleInputSearch } = useCurrentFilters();
 </script>
 
 <template>
   <nav class="todoFilters">
     <ul class="todoFilters-list">
-      <li v-for="filter in store.filters" :key="filter.id">
+      <li v-for="filter in filters" :key="filter.id">
         <router-link
           :to="{ path: '/', query: { filter: filter.id } }"
           class="todoFilters-link"
@@ -36,7 +25,7 @@ const handleChangeViewFilter = (isGridView: boolean) => {
       type="text"
       @input="handleInputSearch"
     />
-    <GridViewFilter :isGridView="store.isGridView" @on-change-view-filter="handleChangeViewFilter" />
+    <GridViewFilter :isGridView="isGridView" @on-change-view-filter="handleChangeViewFilter" />
   </nav>
 </template>
 
