@@ -1,17 +1,28 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { ComputedRef } from "vue";
+import { useTaskStore } from "~/stores/TaskStore";
+
+const store = useTaskStore();
+const isEmptyTasks: ComputedRef<boolean> = computed(() => {
+  return store.todoTasks.length === 0;
+});
+</script>
 
 <template>
   <div class="home">
     <h1>Todo List</h1>
     <div class="home-container">
       <TodoForm />
-      <TodoFilters />
+      <TodoList>
+        <TodoFilters v-if="!isEmptyTasks" />
+      </TodoList>
     </div>
   </div>
 </template>
 
 <style scoped>
 .home {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,7 +35,7 @@
   justify-content: center;
   align-items: center;
 
-  @media (min-width: $list-view-size) {
+  @media (min-width: 768px) {
     width: 75%;
   }
 }

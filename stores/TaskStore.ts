@@ -5,12 +5,11 @@ import type TodoFilterData from "~/filters/domain/TodoFilterData";
 import { TodoFilterId } from "~/filters/domain/TodoFilterId";
 import type { AtLeast } from "~/shared/types/AtLeast";
 import type { Uuid } from "~/shared/types/Uuid";
-import type { StoreData } from "~/shared/stores/domain/StoreData";
+import type { StoreDefinitionData } from "~/shared/stores/domain/StoreData";
 
 export const storeName = "tasks";
 
-// @ts-ignore
-export const useTaskStore: StoreData = defineStore(storeName, {
+export const useTaskStore: StoreDefinitionData = defineStore(storeName, {
   state: (): StateData => ({
     todoTasks: [],
     filters: [...todoFilterItems],
