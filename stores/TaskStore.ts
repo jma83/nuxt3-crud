@@ -1,4 +1,5 @@
-import type { StateData } from "~/shared/stores/domain/StateData";
+import type StateData from "~/shared/stores/domain/StateData";
+
 import { todoFilterItems } from "~/filters/domain/todoFilterItems";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
 import type TodoFilterData from "~/filters/domain/TodoFilterData";
