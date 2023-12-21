@@ -5,9 +5,9 @@ import { useTaskStore } from "~/stores/TaskStore";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
 import type { Uuid } from "~/shared/types/Uuid";
 
-export default function useCreateTaskForm() {
-  const inputText: Ref<string> = ref("");
-  const errorMessage: Ref<string> = ref("");
+export default function useCreateTaskForm({ initInputText = "", initErrorMessage = "" }) {
+  const inputText: Ref<string> = ref(initInputText);
+  const errorMessage: Ref<string> = ref(initErrorMessage);
   const validateTaskName: ValidateTaskNameFormat = new ValidateTaskNameFormat();
   const store = useTaskStore();
   const todoInputRef: Ref<HTMLInputElement | null> = ref(null);

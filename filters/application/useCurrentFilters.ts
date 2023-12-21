@@ -1,8 +1,8 @@
 import { TodoFilterId } from "~/filters/domain/TodoFilterId";
-import { useRouter } from "vue-router";
 import { type Ref, watch } from "vue";
 import { useTaskStore } from "~/stores/TaskStore";
 import type TodoFilterData from "~/filters/domain/TodoFilterData";
+import { useRouter } from "vue-router";
 
 export default function useCurrentFilters() {
   const { currentRoute } = useRouter();

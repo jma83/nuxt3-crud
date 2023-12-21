@@ -7,7 +7,7 @@ import useEditTaskForm from "~/tasks/application/useEditTaskForm";
 import { useTaskStore } from "~/stores/TaskStore";
 import type { StoreData } from "~/shared/stores/domain/StoreData";
 import type { Uuid } from "~/shared/types/Uuid";
-import type { ComputedRef } from "vue";
+import type { ComputedRef, PropType } from "vue";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
 
 const store: StoreData = useTaskStore();
@@ -20,9 +20,18 @@ const isGridView: ComputedRef<boolean> = computed(() => {
   return store.isGridView;
 });
 
+const props = defineProps({
+  initialEditId: { type: Object as PropType<Uuid | null>, default: null },
+  initialDeleteId: { type: Object as PropType<Uuid | null>, default: null },
+});
+
+const { initialEditId, initialDeleteId } = props;
+
 const { handleInitModal, openModal, closeModal } = useModalConfirmation();
-const { deleteCurrentTask, clearDeleteTaskData, saveDeleteTaskId, errorMessageOnDelete, deleteTaskId } =
-  useDeleteTask(store);
+const { deleteCurrentTask, clearDeleteTaskData, saveDeleteTaskId, errorMessageOnDelete, deleteTaskId } = useDeleteTask(
+  store,
+  initialDeleteId,
+);
 const {
   handleStartEditingTask,
   editCurrentTask,
@@ -30,7 +39,7 @@ const {
   handleCheckTaskById,
   errorMessageOnEdit,
   editTaskId,
-} = useEditTaskForm(store);
+} = useEditTaskForm(store, initialEditId);
 
 const handleDeleteTask = (taskId: Uuid) => {
   saveDeleteTaskId(taskId);

@@ -1,4 +1,4 @@
-import { shallowMount } from "@vue/test-utils";
+import { mount, shallowMount } from "@vue/test-utils";
 import type StateData from "~/shared/stores/domain/StateData";
 import TodoForm from "~/components/TodoForm.vue";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
@@ -8,24 +8,20 @@ import {
   ValidationTaskNameMinStrategy,
 } from "~/tasks/application/ValidateTaskNameFormat";
 import StoreStateMother from "./store/state/StoreStateMother";
-import type { StoreActions, StoreGetters } from "pinia";
 import { createTestingPinia, type TestingPinia } from "@pinia/testing";
-import { describe, test, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 describe("TodoForm.vue", () => {
-  let actions: StoreActions<StateData>;
   let state: StateData;
   let storeConfig: TestingPinia;
 
   beforeEach(() => {
-    actions = {
-      addTodoTask: vi.fn(),
-    };
     state = StoreStateMother.createDefault();
     storeConfig = createTestingPinia({
       initialState: { tasks: state },
       stubActions: false,
       stubPatch: false,
+      createSpy: vi.fn,
     });
   });
   it("should fill the form and submit the task to the store", async () => {
@@ -35,12 +31,11 @@ describe("TodoForm.vue", () => {
         plugins: [storeConfig],
       },
     });
-    const spyGetTaskId = vi.spyOn(wrapper.vm.createNewTask, "getTaskId");
+    const spyGetTaskId = vi.spyOn(window.crypto, "randomUUID");
     spyGetTaskId.mockReturnValue(newTask.id);
 
     const input = wrapper.find("input");
-    const inputElement: HTMLInputElement = input.element as HTMLInputElement;
-    inputElement.value = newTask.name;
+    await input.setValue(newTask.name);
     await input.trigger("input");
     const form = wrapper.find("form");
     await form.trigger("submit");
@@ -49,42 +44,38 @@ describe("TodoForm.vue", () => {
   });
 
   it("should fill the form and submit with an empty validation error", async () => {
-    const wrapper = shallowMount(TodoForm, {
+    const wrapper = mount(TodoForm, {
       global: {
         plugins: [storeConfig],
       },
-      data() {
-        return {
-          inputValue: "",
-        };
+      props: {
+        initInputText: "",
       },
     });
-    const spyIsInputValid = vi.spyOn(wrapper.vm, "isInputValid");
+    const spyIsInputValid = vi.spyOn(wrapper.vm, "handleSubmit");
     const form = wrapper.find("form");
     await form.trigger("submit");
-    expect(wrapper.vm.errorMessage).toContain(new ValidationTaskNameEmptyStrategy().getError());
-    expect(spyIsInputValid).toHaveReturnedWith(false);
+    expect(wrapper.text()).toContain(new ValidationTaskNameEmptyStrategy().getError());
+    expect(spyIsInputValid).toHaveBeenCalled();
     const store = useTaskStore();
     expect(store.addTodoTask).not.toHaveBeenCalled();
   });
 
   it("should fill the form and submit with a minimum size validation error", async () => {
-    const wrapper = shallowMount(TodoForm, {
+    const wrapper = mount(TodoForm, {
       global: {
         plugins: [storeConfig],
       },
-      data() {
-        return {
-          inputValue: "T",
-        };
+      props: {
+        initInputText: "T",
       },
     });
-    const spyIsInputValid = vi.spyOn(wrapper.vm, "isInputValid");
+    const spyIsInputValid = vi.spyOn(wrapper.vm, "handleSubmit");
     const form = wrapper.find("form");
     await form.trigger("submit");
 
-    expect(wrapper.vm.errorMessage).toContain(new ValidationTaskNameMinStrategy().getError());
-    expect(spyIsInputValid).toHaveReturnedWith(false);
+    expect(wrapper.text()).toContain(new ValidationTaskNameMinStrategy().getError());
+    expect(spyIsInputValid).toHaveBeenCalled();
     const store = useTaskStore();
     expect(store.addTodoTask).not.toHaveBeenCalled();
   });

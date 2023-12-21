@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import TodoTask from "@/components/tasks/TodoTask.vue";
 import TodoTaskMother from "./tasks/TodoTaskMother";
-import { describe, test, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 
 const checkEmitters = (emittedEvent: any[], value: any) => {
   expect(emittedEvent).toBeTruthy();
@@ -35,7 +35,7 @@ describe("TodoTask.vue", () => {
     const checkboxElement = checkbox.element as HTMLInputElement;
     const textboxElement = textbox.element as HTMLInputElement;
     await wrapper.vm.$nextTick();
-    expect(label.element).not.toBeDefined();
+    expect(label.exists()).toBeFalsy();
     expect(textboxElement.value).toBe(task.name);
     expect(checkboxElement.checked).toBe(false);
   });

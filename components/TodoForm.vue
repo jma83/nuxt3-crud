@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import useCreateTaskForm from "~/tasks/application/useCreateTaskForm";
 
-const { todoInputRef, handleInputTextValue, inputText, errorMessage, handleSubmit } = useCreateTaskForm();
+const props = defineProps({
+  initInputText: { type: String, default: "" },
+  initErrorMessage: { type: String, default: "" },
+});
+const { initInputText, initErrorMessage } = props;
+const { todoInputRef, handleInputTextValue, inputText, errorMessage, handleSubmit } = useCreateTaskForm({
+  initInputText,
+  initErrorMessage,
+});
 </script>
 
 <template>

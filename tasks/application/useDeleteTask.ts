@@ -4,8 +4,8 @@ import type { Uuid } from "~/shared/types/Uuid";
 
 const DEFAULT_DELETE_ERROR: string = "An error has occurred while deleting the task. Please, try again later.";
 
-export default function useDeleteTask(store: StoreData) {
-  const deleteTaskId: Ref<Uuid | null> = ref(null);
+export default function useDeleteTask(store: StoreData, initialDeleteId: Uuid | null) {
+  const deleteTaskId: Ref<Uuid | null> = ref(initialDeleteId);
   const errorMessage: Ref<string> = ref("");
 
   const setDeleteErrorMessage = () => {

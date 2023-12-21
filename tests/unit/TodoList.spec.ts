@@ -2,138 +2,117 @@ import { shallowMount } from "@vue/test-utils";
 import TodoList from "~/components/TodoList.vue";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
 import TodoTaskMother from "./tasks/TodoTaskMother";
-import type StateData from "~/shared/stores/domain/StateData";
 import { ValidationTaskNameEmptyStrategy } from "~/tasks/application/ValidateTaskNameFormat";
 import StoreStateMother from "./store/state/StoreStateMother";
-import { describe, test, it, expect, beforeEach, afterEach, vi } from "vitest";
-import type { StoreActions, StoreGetters } from "pinia";
+import { describe, expect, it, vi } from "vitest";
 import { createTestingPinia, type TestingPinia } from "@pinia/testing";
 import { useTaskStore } from "~/stores/TaskStore";
+import type StateData from "~/shared/stores/domain/StateData";
+import { todoFilterItems } from "~/filters/domain/todoFilterItems";
+import { TodoFilterId } from "~/filters/domain/TodoFilterId";
+import TodoFilterMother from "~/tests/unit/filters/TodoFilterMother";
+import type { Uuid } from "~/shared/types/Uuid";
 
 const TODO_TASKS: TodoTaskData[] = [TodoTaskMother.createActiveTask(), TodoTaskMother.createActiveTask()];
 
 describe("TodoList.vue", () => {
-  let actions: StoreActions<StateData>;
-  let state: StateData;
-  let storeConfig: TestingPinia;
-
-  const getStoreMocks = () => {
-    actions = {
-      deleteTodoTaskById: vi.fn(),
-      editTodoTaskById: vi.fn(),
-    };
-    state = StoreStateMother.createDefault();
-    storeConfig = createTestingPinia({
+  const getStoreConfig = (state: StateData = StoreStateMother.createDefault()): TestingPinia => {
+    return createTestingPinia({
       initialState: { tasks: state },
       stubActions: false,
       stubPatch: false,
+      createSpy: vi.fn,
     });
   };
 
   it("should list the given todo tasks", () => {
     const todoTasks: TodoTaskData[] = TODO_TASKS;
-    const isEmptyTasks: boolean = false;
     const wrapper = shallowMount(TodoList, {
-      propsData: { todoTasks, isEmptyTasks },
+      global: {
+        plugins: [getStoreConfig(StoreStateMother.createDefault(todoTasks, todoFilterItems))],
+      },
     });
 
-    const paragraph = wrapper.find("p");
     const ul = wrapper.find("ul");
-    expect(paragraph.element).not.toBeDefined();
     expect(ul.element).toBeDefined();
-    expect(ul.element.childNodes.length).toBe(todoTasks.length);
+    expect(ul.element.children.length).toBe(todoTasks.length);
   });
 
   it("should list empty todo tasks", () => {
     const todoTasks: TodoTaskData[] = [];
-    const isEmptyTasks: boolean = true;
     const wrapper = shallowMount(TodoList, {
-      propsData: { todoTasks, isEmptyTasks },
+      global: {
+        plugins: [getStoreConfig(StoreStateMother.createDefault(todoTasks, todoFilterItems))],
+      },
     });
 
-    const paragraph = wrapper.find("p");
     const ul = wrapper.find("ul");
-    expect(paragraph.element).not.toBeDefined();
     expect(ul.element).toBeDefined();
-    expect(ul.element.childNodes.length).toBe(todoTasks.length);
+    expect(ul.element.children.length).toBe(todoTasks.length);
   });
 
   it("should not list not empty but filtered todo tasks", () => {
-    const todoTasks: TodoTaskData[] = [];
-    const isEmptyTasks: boolean = false;
     const wrapper = shallowMount(TodoList, {
-      propsData: { todoTasks, isEmptyTasks },
+      global: {
+        plugins: [
+          getStoreConfig(
+            StoreStateMother.createDefault(TODO_TASKS, [
+              TodoFilterMother.createFilter(TodoFilterId.All, false),
+              TodoFilterMother.createFilter(TodoFilterId.Done, true),
+            ]),
+          ),
+        ],
+      },
     });
 
     const paragraph = wrapper.find("p");
-    const ul = wrapper.find("ul");
     expect(paragraph.text()).toBe("No results for current filters");
-    expect(ul.element).not.toBeDefined();
   });
 
   it("should call delete confirmation action in store", () => {
-    getStoreMocks();
     const task = TodoTaskMother.createActiveTask();
     const wrapper = shallowMount(TodoList, {
       global: {
-        plugins: [storeConfig],
+        plugins: [getStoreConfig(StoreStateMother.createDefault())],
       },
-      data() {
-        return {
-          deleteTaskId: task.id,
-        };
+      props: {
+        initialDeleteId: task.id,
       },
-    });
-    const spyCloseModal = vi.spyOn(wrapper.vm.modalConfirmationService, "close");
-    spyCloseModal.mockImplementation(() => {
-      return true;
     });
     wrapper.vm.handleConfirmDeleteTask();
 
     expect(wrapper.vm.errorMessage).toBe("");
     const store = useTaskStore();
     expect(store.deleteTodoTaskById).toHaveBeenCalledTimes(1);
-  });
-
-  it("should call open confirmation modal with errors", () => {
-    const wrapper = shallowMount(TodoList, {});
-    wrapper.vm.handleDeleteTask(TodoTaskMother.createActiveTask().id);
-
-    expect(wrapper.vm.errorMessage).not.toBe("");
+    expect(store.deleteTodoTaskById).toHaveBeenCalledWith(task.id);
   });
 
   it("should call edit action in store successfully", () => {
-    getStoreMocks();
     const task = TodoTaskMother.createActiveTask();
     const wrapper = shallowMount(TodoList, {
       global: {
-        plugins: [storeConfig],
+        plugins: [getStoreConfig(StoreStateMother.createDefault())],
       },
-      data() {
-        return {
-          editTaskId: task.id,
-        };
+      props: {
+        initialEditId: task.id as Uuid,
       },
     });
-    wrapper.vm.handleSubmitEdit(task);
+    wrapper.vm.editCurrentTask(task);
     const store = useTaskStore();
     expect(store.editTodoTaskById).toHaveBeenCalledTimes(1);
   });
 
   it("should not call edit action in store with validation error", () => {
-    getStoreMocks();
     const task = TodoTaskMother.createActiveTask("");
     const wrapper = shallowMount(TodoList, {
       global: {
-        plugins: [storeConfig],
+        plugins: [getStoreConfig(StoreStateMother.createDefault())],
       },
-      data() {
-        return {
-          editTaskId: task.id,
-        };
+      props: {
+        initialEditId: task.id as Uuid,
       },
     });
-    wrapper.vm.handleSubmitEdit(task);
+    wrapper.vm.editCurrentTask(task);
     expect(wrapper.vm.errorMessage).toBe(new ValidationTaskNameEmptyStrategy().getError());
     const store = useTaskStore();
     expect(store.editTodoTaskById).not.toHaveBeenCalled();

@@ -6,8 +6,8 @@ import type TaskValidationResponseData from "~/tasks/domain/TaskValidationRespon
 import ValidateTaskNameFormat from "~/tasks/application/ValidateTaskNameFormat";
 import type { AtLeast } from "~/shared/types/AtLeast";
 
-export default function useEditTaskForm(store: StoreData) {
-  const editTaskId: Ref<Uuid | null> = ref(null);
+export default function useEditTaskForm(store: StoreData, initialEditId: Uuid | null) {
+  const editTaskId: Ref<Uuid | null> = ref(initialEditId);
   const errorMessage: Ref<string> = ref("");
   const validateTaskName: ValidateTaskNameFormat = new ValidateTaskNameFormat();
 
