@@ -2,7 +2,7 @@ import { TodoFilterId } from "~/filters/domain/TodoFilterId";
 import { type Ref, watch } from "vue";
 import { useTaskStore } from "~/stores/TaskStore";
 import type TodoFilterData from "~/filters/domain/TodoFilterData";
-import { useRouter } from "vue-router";
+import { type RouteLocationNormalized, useRouter } from "vue-router";
 
 export default function useCurrentFilters() {
   const { currentRoute } = useRouter();
@@ -43,10 +43,22 @@ export default function useCurrentFilters() {
     store.setFilters(updatedFilters);
   };
 
-  watch(currentRoute, () => {
-    const filterId: TodoFilterId = checkActiveFilterByRoute();
+  const handleChangeRoute = (route: RouteLocationNormalized) => {
+    const filterId: TodoFilterId = checkActiveFilterByRoute(route);
     updateActiveFilterById(filterId);
+  };
+
+  watch(currentRoute, () => {
+    handleChangeRoute(currentRoute.value);
   });
 
-  return { handleInputSearch, handleChangeViewFilter, isGridView, filters, searchInput };
+  return {
+    handleInputSearch,
+    handleChangeRoute,
+    handleChangeViewFilter,
+    updateActiveFilterById,
+    isGridView,
+    filters,
+    searchInput,
+  };
 }

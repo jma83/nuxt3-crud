@@ -2,7 +2,8 @@
 import GridViewFilter from "~/components/filters/GridViewFilter.vue";
 import useCurrentFilters from "~/filters/application/useCurrentFilters";
 
-const { isGridView, filters, searchInput, handleChangeViewFilter, handleInputSearch } = useCurrentFilters();
+const { isGridView, filters, searchInput, handleChangeViewFilter, handleChangeRoute, handleInputSearch } =
+  useCurrentFilters();
 </script>
 
 <template>
@@ -35,8 +36,17 @@ const { isGridView, filters, searchInput, handleChangeViewFilter, handleInputSea
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: baseline;
+  align-items: center;
+
   gap: 1rem;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .todoFilters {
+    flex-direction: row;
+    align-items: baseline;
+  }
 }
 
 .todoFilters-list {

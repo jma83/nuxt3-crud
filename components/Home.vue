@@ -34,7 +34,6 @@ const isEmptyTasks: ComputedRef<boolean> = computed(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   @media (min-width: 768px) {
     width: 75%;
   }

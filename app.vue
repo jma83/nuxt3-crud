@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <div class="app">
     <nav class="app-nav">

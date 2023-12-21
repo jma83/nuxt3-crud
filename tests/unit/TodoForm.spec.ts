@@ -1,5 +1,4 @@
 import { mount, shallowMount } from "@vue/test-utils";
-import type StateData from "~/shared/stores/domain/StateData";
 import TodoForm from "~/components/TodoForm.vue";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
 import TodoTaskMother from "./tasks/TodoTaskMother";
@@ -7,22 +6,15 @@ import {
   ValidationTaskNameEmptyStrategy,
   ValidationTaskNameMinStrategy,
 } from "~/tasks/application/ValidateTaskNameFormat";
-import StoreStateMother from "./store/state/StoreStateMother";
-import { createTestingPinia, type TestingPinia } from "@pinia/testing";
+import { type TestingPinia } from "@pinia/testing";
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import StoreConfigMother from "~/tests/unit/store/StoreConfigMother";
 
 describe("TodoForm.vue", () => {
-  let state: StateData;
   let storeConfig: TestingPinia;
 
   beforeEach(() => {
-    state = StoreStateMother.createDefault();
-    storeConfig = createTestingPinia({
-      initialState: { tasks: state },
-      stubActions: false,
-      stubPatch: false,
-      createSpy: vi.fn,
-    });
+    storeConfig = StoreConfigMother.createDefault();
   });
   it("should fill the form and submit the task to the store", async () => {
     const newTask: TodoTaskData = TodoTaskMother.createActiveTask();

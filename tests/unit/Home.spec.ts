@@ -1,34 +1,21 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
-import { createTestingPinia, type TestingPinia } from "@pinia/testing";
-import type StateData from "~/shared/stores/domain/StateData";
 import Home from "~/components/Home.vue";
 import TodoTaskMother from "./tasks/TodoTaskMother";
-import StoreStateMother from "./store/state/StoreStateMother";
 import type { StoreData } from "~/shared/stores/domain/StoreData";
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { useTaskStore } from "~/stores/TaskStore";
 import type TodoTaskData from "~/tasks/domain/TodoTaskData";
+import StoreConfigMother from "~/tests/unit/store/StoreConfigMother";
 
 describe("Home.vue", () => {
-  let state: StateData;
-  let storeConfig: TestingPinia;
   let storeTasks: StoreData;
   let wrapper: VueWrapper<typeof Home>;
 
   beforeEach(() => {
-    state = StoreStateMother.createDefault();
-
-    storeConfig = createTestingPinia({
-      initialState: { tasks: state },
-      stubActions: false,
-      stubPatch: false,
-      createSpy: vi.fn,
-    });
-
     // @ts-ignore
     wrapper = shallowMount(Home, {
       global: {
-        plugins: [storeConfig],
+        plugins: [StoreConfigMother.createDefault()],
       },
     });
   });

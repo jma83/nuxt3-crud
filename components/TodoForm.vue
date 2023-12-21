@@ -51,6 +51,7 @@ const { todoInputRef, handleInputTextValue, inputText, errorMessage, handleSubmi
   justify-content: flex-start;
   flex-direction: column;
   gap: 0.25rem;
+  padding: 0.5rem;
 }
 
 .todoForm-label {
@@ -77,5 +78,12 @@ const { todoInputRef, handleInputTextValue, inputText, errorMessage, handleSubmi
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .todoForm-formDivider {
+    flex-wrap: nowrap;
+  }
 }
 </style>

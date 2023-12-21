@@ -1,42 +1,32 @@
-import { mount, shallowMount, VueWrapper } from "@vue/test-utils";
+import { mount, RouterLinkStub, shallowMount, type VueWrapper } from "@vue/test-utils";
 import TodoFilters from "~/components/TodoFilters.vue";
 import type TodoFilterData from "~/filters/domain/TodoFilterData";
 import { TodoFilterId } from "~/filters/domain/TodoFilterId";
 import TodoFilterMother from "./filters/TodoFilterMother";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import RouteMother from "~/tests/unit/routes/RouteMother";
-import { createMemoryHistory, createRouter, useRouter } from "vue-router";
-import useCurrentFilters from "~/filters/application/useCurrentFilters";
+import { describe, it, expect } from "vitest";
+import StoreStateMother from "~/tests/unit/store/StoreStateMother";
+import StoreConfigMother from "~/tests/unit/store/StoreConfigMother";
+import { createRouter, createWebHistory } from "vue-router";
 import Home from "~/components/Home.vue";
-import type StateData from "~/shared/stores/domain/StateData";
-import { createTestingPinia, type TestingPinia } from "@pinia/testing";
-import type { StoreData } from "~/shared/stores/domain/StoreData";
-import StoreStateMother from "~/tests/unit/store/state/StoreStateMother";
-import GridViewFilter from "~/components/filters/GridViewFilter.vue";
 
 const TODO_FILTERS: TodoFilterData[] = [
   TodoFilterMother.createFilter(TodoFilterId.All),
   TodoFilterMother.createFilter(TodoFilterId.Done, false),
 ];
 
-vi.mock("vue-router", () => ({
-  useRouter: vi.fn(() => ({ currentRoute: { value: RouteMother.createDefaultRoute() } })),
-}));
-
-const getStoreConfig = (state: StateData = StoreStateMother.createDefault()): TestingPinia => {
-  return createTestingPinia({
-    initialState: { tasks: state },
-    stubActions: false,
-    stubPatch: false,
-    createSpy: vi.fn,
-  });
-};
+const mockedRouter = createRouter({
+  history: createWebHistory(),
+  routes: [{ component: Home, path: "/", name: "home" }],
+});
 
 describe("TodoFilters.vue", () => {
   it("should render given filters", () => {
-    const wrapper = shallowMount(TodoFilters, {
+    const wrapper: VueWrapper = shallowMount(TodoFilters, {
       global: {
-        plugins: [getStoreConfig(StoreStateMother.createDefault())],
+        plugins: [StoreConfigMother.createDefault(), mockedRouter],
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
       },
     });
     const store = useTaskStore();
@@ -49,7 +39,10 @@ describe("TodoFilters.vue", () => {
   it("should render empty filters", () => {
     const wrapper = shallowMount(TodoFilters, {
       global: {
-        plugins: [getStoreConfig(StoreStateMother.createDefault([], []))],
+        plugins: [StoreConfigMother.createDefault(StoreStateMother.createDefault([], [])), mockedRouter],
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
       },
     });
     const store = useTaskStore();
@@ -63,7 +56,10 @@ describe("TodoFilters.vue", () => {
     const filters: TodoFilterData[] = TODO_FILTERS;
     const wrapper = shallowMount(TodoFilters, {
       global: {
-        plugins: [getStoreConfig()],
+        plugins: [StoreConfigMother.createDefault(), mockedRouter],
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
       },
     });
     const activeFilter = filters.find((filter: TodoFilterData) => filter.active);
@@ -77,7 +73,10 @@ describe("TodoFilters.vue", () => {
   it("should emit view change event on change checkbox", async () => {
     const wrapper = mount(TodoFilters, {
       global: {
-        plugins: [getStoreConfig()],
+        plugins: [StoreConfigMother.createDefault(), mockedRouter],
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
       },
     });
     const store = useTaskStore();
@@ -94,7 +93,10 @@ describe("TodoFilters.vue", () => {
     const nameSearch: string = "New search";
     const wrapper = shallowMount(TodoFilters, {
       global: {
-        plugins: [getStoreConfig()],
+        plugins: [StoreConfigMother.createDefault(), mockedRouter],
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
       },
     });
     const store = useTaskStore();
@@ -103,5 +105,29 @@ describe("TodoFilters.vue", () => {
     inputSearch.setValue(nameSearch);
     await inputSearch.trigger("input");
     expect(store.setNameSearch).toHaveBeenCalledWith(nameSearch);
+  });
+
+  it("should emit setFilters action on change route event", async () => {
+    const wrapper = shallowMount(TodoFilters, {
+      global: {
+        plugins: [StoreConfigMother.createDefault(), mockedRouter],
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
+        mocks: {
+          $route: mockedRouter.currentRoute,
+          $router: mockedRouter,
+        },
+      },
+    });
+    const link = wrapper.find(".todoFilters-link:not(.todoFilters-link-active)");
+    expect(link.exists()).toBeTruthy();
+    link.trigger("click");
+    await wrapper.vm.$router.replace({ path: "/", query: { filter: TodoFilterId.Done } });
+    const store = useTaskStore();
+    wrapper.vm.handleChangeRoute(wrapper.vm.$route);
+    await wrapper.vm.$nextTick();
+
+    expect(store.setFilters).toHaveBeenCalled();
   });
 });
