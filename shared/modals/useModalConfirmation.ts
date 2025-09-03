@@ -1,4 +1,5 @@
 import type { Ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 
 export default function useModalConfirmation() {
   let modalConfirmationDialog: Ref<HTMLDialogElement | null> = ref(null);

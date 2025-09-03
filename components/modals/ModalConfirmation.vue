@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({ title: { type: String, required: true }, description: { type: String, required: true } });
 const emit = defineEmits(["on-init", "on-confirm", "on-dismiss"]);

@@ -1,4 +1,5 @@
 import type { Ref } from "vue";
+import { ref } from "vue";
 import type { StoreData } from "~/shared/stores/domain/StoreData";
 import type { Uuid } from "~/shared/types/Uuid";
 
